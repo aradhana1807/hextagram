@@ -10,6 +10,7 @@ import { FaCameraRetro } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { app } from '@/firebase'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { addDoc, collection, getFirestore, serverTimestamp } from "firebase/firestore";
 
 
 export default function Header() {
@@ -19,6 +20,9 @@ export default function Header() {
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const filePickerRef = useRef(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
+  const [postUploading, setPostUploading] = useState(false);
+  const [caption, setCaption] = useState('');
+  const db = getFirestore(app);
 
   function addImageToPost(e) {
     const file = e.target.files[0];
@@ -60,6 +64,20 @@ export default function Header() {
         });
       }
     );
+  }
+
+  async function handleSubmit() {
+    setPostUploading(true);
+    const docRef = await addDoc(collection(db, 'posts'), {
+      username: session.user.username,
+      caption,
+      profileImg: session.user.image,
+      image: imageFileUrl,
+      timestamp: serverTimestamp(),
+
+    });
+    setPostUploading(false);
+    setIsOpen(false);
   }
 
   return (
@@ -115,7 +133,8 @@ export default function Header() {
                   onClick={() => filePickerRef.current.click()}
                   className='text-4xl text-gray-700 cursor-pointer' />
               )
-              }<input
+              }
+              <input
                 hidden
                 ref={filePickerRef}
                 type='file'
@@ -125,11 +144,15 @@ export default function Header() {
 
             </div>
 
-            <input type='text' maxLength='150'
+            <input
+              type='text'
+              maxLength='150'
               placeholder='Enter a caption...'
               className='m-4 border-none text-center w-full focus:ring-0 outline-none'
+              onChange={(e) => setCaption(e.target.value)}
             />
-            <button disabled className='bg-emerald-600 text-white p-2 w-full shadow-md rounded-lg hover:brightness-105 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:brightness-100'>
+            <button onClick={handleSubmit} disabled={
+              !selectedFile || caption.trim() === '' || imageFileUploading || postUploading} className='bg-emerald-600 text-white p-2 w-full shadow-md rounded-lg hover:brightness-105 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:brightness-100'>
               Upload Post
             </button>
 
