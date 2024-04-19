@@ -85,8 +85,9 @@ export default function Header() {
       <div className='flex justify-between items-center max-w-6xl mx-auto'>
         {/* Logo */}
 
-        <Link href='/' className='hidden lg:inline-flex text-2xl font-bold'>
-          Hextagram
+        <Link href='/' className='hidden lg:inline-flex'>
+          <Image src='/hextagram-font.png' width={125} height={125} alt='large logo'
+          />
         </Link>
 
         <Link href='/' className='lg:hidden'>
