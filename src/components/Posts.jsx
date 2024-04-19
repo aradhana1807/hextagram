@@ -11,7 +11,7 @@ export default async function Posts() {
     });
     
     return (
-        <div className="p-10">
+        <div className="p-5">
             {
                 data.map((post) => (
                     <Post key={post.id} post={post} />

@@ -13,6 +13,9 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { app } from '../firebase';
 import Moment from 'react-moment';
+import { IoSend } from "react-icons/io5";
+
+
 
 export default function CommentSection({ id }) {
     const { data: session } = useSession();
@@ -58,13 +61,13 @@ export default function CommentSection({ id }) {
                                 alt='userimage'
                                 className='h-7 rounded-full object-cover border p-[2px]'
                             />
-                            <p className='text-sm flex-1 truncate'>
+                            <p className='text-sm flex-1 '>
                                 <span className='font-bold text-gray-700'>
                                     {comment.data().username}
                                 </span>{' '}
                                 {comment.data().comment}
                             </p>
-                            <Moment fromNow className='text-xs text-gray-400 pr-2'>
+                            <Moment fromNow className='text-xs text-gray-400 pr-1'>
                                 {comment.data().timestamp?.toDate()}
                             </Moment>
                         </div>
@@ -90,7 +93,7 @@ export default function CommentSection({ id }) {
                         type='submit'
                         className=' text-blue-400 disabled:cursor-not-allowed disabled:text-gray-400'
                     >
-                        Post
+                        <IoSend size={20} />
                     </button>
                 </form>
             )}
