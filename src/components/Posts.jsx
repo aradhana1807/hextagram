@@ -11,7 +11,7 @@ export default async function Posts() {
         data.push({ id: doc.id, ...doc.data() });
     })
     return (
-        <div>
+        <div className="p-2">
         {
             data.map((post) => (
                 <Post key={post.id} post={post} />
