@@ -34,7 +34,7 @@ export default function LikeSection({ id }) {
     }, [likes]);
 
     async function likePost() {
-        console.log(db, id, 'likes', session?.user?.uid);
+        // console.log(db, id, 'likes', session?.user?.uid);
         if (hasLiked) {
             await deleteDoc(doc(db, 'posts', id, 'likes', session?.user?.uid));
         } else {
