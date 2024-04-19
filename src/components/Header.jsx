@@ -87,7 +87,7 @@ export default function Header() {
         {/* Logo */}
 
         <Link href='/' className='hidden lg:inline-flex'>
-          <Image src='/hextagram-font.png' width={125} height={125} alt='large logo'
+          <img src='/hextagram-font.png' width={125} alt='large logo'
           />
         </Link>
 
