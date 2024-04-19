@@ -1,29 +1,37 @@
-/* eslint-disable @next/next/no-img-element */
-"use client"
-import { signIn, useSession, signOut } from 'next-auth/react'
-import Image from 'next/image'
-import Link from 'next/link'
-import React, { useEffect, useRef, useState } from 'react'
-import Modal from 'react-modal'
-import { IoAddCircleOutline } from "react-icons/io5";
-import { FaCameraRetro } from "react-icons/fa";
-import { AiOutlineClose } from "react-icons/ai";
-import { app } from '@/firebase'
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
-import { addDoc, collection, getFirestore, serverTimestamp } from "firebase/firestore";
+'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
+import { signIn, useSession, signOut } from 'next-auth/react';
+import Modal from 'react-modal';
+import { useEffect, useRef, useState } from 'react';
+import { IoMdAddCircleOutline } from 'react-icons/io';
+import { HiCamera } from 'react-icons/hi';
+import { AiOutlineClose } from 'react-icons/ai';
+import { app } from '@/firebase';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from 'firebase/storage';
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  serverTimestamp,
+} from 'firebase/firestore';
 
 export default function Header() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
-  const filePickerRef = useRef(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
   const [postUploading, setPostUploading] = useState(false);
   const [caption, setCaption] = useState('');
+  const filePickerRef = useRef(null);
   const db = getFirestore(app);
-
   function addImageToPost(e) {
     const file = e.target.files[0];
     if (file) {
@@ -34,7 +42,7 @@ export default function Header() {
 
   useEffect(() => {
     if (selectedFile) {
-      uploadImageToStorage()
+      uploadImageToStorage();
     }
   }, [selectedFile]);
 
@@ -49,7 +57,7 @@ export default function Header() {
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
+        // console.log('Upload is ' + progress + '% done');
       },
       (error) => {
         console.error(error);
@@ -65,7 +73,7 @@ export default function Header() {
       }
     );
   }
-
+  // console.log(session);
   async function handleSubmit() {
     setPostUploading(true);
     const docRef = await addDoc(collection(db, 'posts'), {
@@ -74,95 +82,121 @@ export default function Header() {
       profileImg: session.user.image,
       image: imageFileUrl,
       timestamp: serverTimestamp(),
-
     });
     setPostUploading(false);
     setIsOpen(false);
     location.reload();
   }
-
   return (
     <div className='shadow-sm border-b sticky top-0 bg-white z-30 p-3'>
       <div className='flex justify-between items-center max-w-6xl mx-auto'>
-        {/* Logo */}
+        {/* logo */}
 
         <Link href='/' className='hidden lg:inline-flex'>
-          <img src='/hextagram-font.png' width={125} alt='large logo'
+          <Image
+            src='/hextagram-font.png'
+            width={100}
+            height={100}
+            alt='instagram logo'
           />
         </Link>
 
         <Link href='/' className='lg:hidden'>
-          <Image src='/hextagram.png' width={50} height={50} alt='small logo'
+          <Image
+            src='/hextagram.png'
+            width={50}
+            height={50}
+            alt='instagram logo'
           />
         </Link>
 
-        {/* search bar */}
-        <input type='text' placeholder='Search'
-          className='bg-gray-50 border border-gray-200 rounded text-sm w-full py-2 px-4 max-w-[210px]'
-        />
+        {/* search input
+
+        <input
+          type='text'
+          placeholder='Search'
+          className='bg-gray-50 border border-gray-200 rounded text-sm w-full py-2 px-4 max-w-[200px]'
+        /> */}
 
         {/* menu items */}
 
         {session ? (
-
-          <div className='flex gap-5 items-center'>
-            <IoAddCircleOutline className='text-4xl cursor-pointer transform hover-125 transition duration-300 hover:text-red-500' onClick={() => setIsOpen(true)} />
-            <img onClick={signOut} src={session.user.image} alt='profile' className='h-10 w-10 rounded-full cursor-pointer' />
+          <div className='flex gap-2 items-center'>
+            <IoMdAddCircleOutline
+              className='text-2xl cursor-pointer tranform hover:scale-125 transition duration-300 hover:text-emerald-600'
+              onClick={() => setIsOpen(true)}
+            />
+            <img
+              src={session.user.image}
+              alt={session.user.name}
+              className='h-10 w-10 rounded-full cursor-pointer'
+              onClick={signOut}
+            />
           </div>
-
         ) : (
-          <button onClick={() => signIn()} className='text-sm font-semibold text-green-600'>Log In
+          <button
+            onClick={signIn}
+            className='text-sm font-semibold text-blue-500'
+          >
+            Log In
           </button>
         )}
-
-
       </div>
-
-      {
-        isOpen && (
-          <Modal isOpen={isOpen} className='max-w-l w-[90%] p-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border-2 rounded-md shadow-sm'
-            onRequestClose={() => setIsOpen(false)}
-            ariaHideApp={false}
-          >
-            <div className='flex flex-col justify-center items-center h-[100%]'>
-
-              {selectedFile ? (
-                <img
-                  onClick={() => setSelectedFile(null)}
-                  src={imageFileUrl} alt='selected image' className={`rounded-xl w-full max-h-[250px] object-cover cursor-pointer' ${imageFileUploading ? 'animate-pulse' : ''}`} />
-              ) : (
-                <FaCameraRetro
-                  onClick={() => filePickerRef.current.click()}
-                  className='text-4xl text-gray-700 cursor-pointer' />
-              )
-              }
-              <input
-                hidden
-                ref={filePickerRef}
-                type='file'
-                accept='image/*'
-                onChange={addImageToPost}
+      {isOpen && (
+        <Modal
+          isOpen={isOpen}
+          className='max-w-lg w-[90%] p-6 absolute top-56 left-[50%] translate-x-[-50%] bg-white border-2 rounded-md shadow-md flex flex-col justify-center items-center'
+          onRequestClose={() => setIsOpen(false)}
+          ariaHideApp={false}
+        >
+          <div className='flex flex-col justify-center items-center h-[100%]'>
+            {selectedFile ? (
+              <img
+                onClick={() => setSelectedFile(null)}
+                src={imageFileUrl}
+                alt='selected file'
+                className={`w-full max-h-[250px] object-over cursor-pointer ${imageFileUploading ? 'animate-pulse' : ''
+                  }`}
               />
-
-            </div>
-
+            ) : (
+              <HiCamera
+                onClick={() => filePickerRef.current.click()}
+                className='text-5xl text-gray-400 cursor-pointer'
+              />
+            )}
             <input
-              type='text'
-              maxLength='150'
-              placeholder='Enter a caption...'
-              className='m-4 border-none text-center w-full focus:ring-0 outline-none'
-              onChange={(e) => setCaption(e.target.value)}
+              hidden
+              ref={filePickerRef}
+              type='file'
+              accept='image/*'
+              onChange={addImageToPost}
             />
-            <button onClick={handleSubmit} disabled={
-              !selectedFile || caption.trim() === '' || imageFileUploading || postUploading} className='bg-emerald-600 text-white p-2 w-full shadow-md rounded-lg hover:brightness-105 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:brightness-100'>
-              Upload Post
-            </button>
-
-            <AiOutlineClose className='text-2xl text-gray-700 cursor-pointer absolute top-1 right-1 hover:text-red-600 transition duration-300' onClick={() => setIsOpen(false)}
-            />
-
-          </Modal>
-        )}
-    </div >
+          </div>
+          <input
+            type='text'
+            maxLength='150'
+            placeholder='Enter your caption'
+            className='m-4 border-none text-center w-full focus:ring-0 outline-none'
+            onChange={(e) => setCaption(e.target.value)}
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={
+              !selectedFile ||
+              caption.trim() === '' ||
+              postUploading ||
+              imageFileUploading
+            }
+            className='w-full bg-emerald-600 text-white p-2 shadow-md rounded-lg hover:brightness-105 disabled:bg-gray-200 disabled:cursor-not-allowed disabled:hover:brightness-100'
+          >
+            Upload Post
+          </button>
+          <AiOutlineClose
+            className='cursor-pointer absolute top-2 right-2 hover:text-red-600 transition duration-300'
+            onClick={() => setIsOpen(false)}
+          />
+        </Modal>
+      )}
+    </div>
   );
 }

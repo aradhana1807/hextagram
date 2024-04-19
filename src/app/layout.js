@@ -15,7 +15,6 @@ export default function RootLayout({ children }) {
     <SessionWrapper>
       <html lang="en">
         <body className={raleway.className}>
-
           <Header />
           {children}
         </body>
