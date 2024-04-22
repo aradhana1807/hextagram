@@ -145,7 +145,7 @@ export default function Header() {
       {isOpen && (
         <Modal
           isOpen={isOpen}
-          className='max-w-lg w-[90%] p-6 absolute top-56 left-[50%] -translate-x-[50%] -translate-y-[-50%] bg-white border-2 rounded-md shadow-md flex flex-col justify-center items-center'
+          className='max-w-lg w-[90%] p-6 absolute top-56 left-[50%] -translate-x-[50%] bg-white border-2 rounded-md shadow-md flex flex-col justify-center items-center'
           onRequestClose={() => setIsOpen(false)}
           ariaHideApp={false}
         >
