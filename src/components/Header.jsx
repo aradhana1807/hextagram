@@ -88,17 +88,12 @@ export default function Header() {
     location.reload();
   }
   return (
-    <div className='shadow-sm border-b sticky top-0 bg-white z-30 p-3'>
+    <div className='shadow-sm border-b sticky top-0 bg-white z-30 p-2'>
       <div className='flex justify-between items-center max-w-6xl mx-auto'>
         {/* logo */}
 
         <Link href='/' className='hidden lg:inline-flex'>
-          <Image
-            src='/hextagram-font.png'
-            width={100}
-            height={100}
-            alt='instagram logo'
-          />
+          <h1 className='font-bold text-2xl'>Hextagram</h1>
         </Link>
 
         <Link href='/' className='lg:hidden'>
